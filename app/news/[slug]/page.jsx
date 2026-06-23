@@ -9,22 +9,29 @@ import ShareButtons from '@/components/ShareButtons';
 import AdDisplay from '@/components/AdDisplay';
 import Footer from '@/components/Footer';
 import NewsDetailClient from './NewsDetailClient';
+import ViewTracker from '@/components/ViewTracker';
 import Link from 'next/link';
 import { formatDate } from '@/lib/utils';
 import { notFound } from 'next/navigation';
 
 export const revalidate = 60;
 
+export async function generateStaticParams() {
+  await connectDB();
+  const news = await News.find({ status: 'published' })
+    .select('slug')
+    .sort({ publishedAt: -1 })
+    .limit(50)
+    .lean();
+  return news.map(n => ({ slug: n.slug }));
+}
+
 export default async function NewsDetailPage({ params }) {
   await connectDB();
 
   const [categories, news, settings] = await Promise.all([
     Category.find({ isActive: true }).sort({ name: 1 }).lean(),
-    News.findOneAndUpdate(
-      { slug: params.slug, status: 'published' },
-      { $inc: { views: 1 } },
-      { new: true }
-    )
+    News.findOne({ slug: params.slug, status: 'published' })
       .populate('category', 'name slug color')
       .populate('author', 'name')
       .lean(),
@@ -42,6 +49,7 @@ export default async function NewsDetailPage({ params }) {
   return (
     <div className="min-h-screen bg-white">
       <Navbar categories={categories} />
+      <ViewTracker slug={params.slug} />
 
       <div className="max-w-7xl mx-auto px-4 py-8">
         <Link href="/" className="text-red-600 text-sm hover:underline mb-6 inline-block">← Back to Home</Link>

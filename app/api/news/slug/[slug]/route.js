@@ -5,11 +5,7 @@ import Review from '@/lib/models/Review';
 export async function GET(req, { params }) {
   try {
     await connectDB();
-    const news = await News.findOneAndUpdate(
-      { slug: params.slug, status: 'published' },
-      { $inc: { views: 1 } },
-      { new: true }
-    )
+    const news = await News.findOne({ slug: params.slug, status: 'published' })
       .populate('category', 'name slug color')
       .populate('author', 'name')
       .lean();
@@ -22,6 +18,19 @@ export async function GET(req, { params }) {
     return new Response(JSON.stringify({ news, reviews }), {
       headers: { 'Cache-Control': 'public, max-age=0, s-maxage=60, stale-while-revalidate=120' },
     });
+  } catch (error) {
+    return Response.json({ error: error.message }, { status: 500 });
+  }
+}
+
+export async function PATCH(req, { params }) {
+  try {
+    await connectDB();
+    await News.findOneAndUpdate(
+      { slug: params.slug },
+      { $inc: { views: 1 } }
+    );
+    return Response.json({ ok: true });
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 });
   }
