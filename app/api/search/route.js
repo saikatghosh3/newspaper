@@ -8,7 +8,9 @@ export async function GET() {
       .select('title slug')
       .sort({ title: 1 })
       .lean();
-    return Response.json({ news });
+    return new Response(JSON.stringify({ news }), {
+      headers: { 'Cache-Control': 'public, max-age=0, s-maxage=120, stale-while-revalidate=300' },
+    });
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 });
   }

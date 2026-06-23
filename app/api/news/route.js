@@ -51,7 +51,9 @@ export async function GET(req) {
         .lean(),
     ]);
 
-    return Response.json({ news, total, page, pages: Math.ceil(total / limit) });
+    return new Response(JSON.stringify({ news, total, page, pages: Math.ceil(total / limit) }), {
+      headers: { 'Cache-Control': 'public, max-age=0, s-maxage=60, stale-while-revalidate=120' },
+    });
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 });
   }

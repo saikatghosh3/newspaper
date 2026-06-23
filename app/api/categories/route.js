@@ -22,7 +22,9 @@ export async function GET(req) {
         .lean(),
     ]);
 
-    return Response.json({ categories, total, page, pages: Math.ceil(total / limit) });
+    return new Response(JSON.stringify({ categories, total, page, pages: Math.ceil(total / limit) }), {
+      headers: { 'Cache-Control': 'public, max-age=0, s-maxage=60, stale-while-revalidate=120' },
+    });
   } catch {
     return Response.json({ error: 'Server error' }, { status: 500 });
   }

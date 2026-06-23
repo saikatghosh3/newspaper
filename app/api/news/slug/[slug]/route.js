@@ -19,7 +19,9 @@ export async function GET(req, { params }) {
       .sort({ createdAt: -1 })
       .lean();
 
-    return Response.json({ news, reviews });
+    return new Response(JSON.stringify({ news, reviews }), {
+      headers: { 'Cache-Control': 'public, max-age=0, s-maxage=60, stale-while-revalidate=120' },
+    });
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 });
   }
