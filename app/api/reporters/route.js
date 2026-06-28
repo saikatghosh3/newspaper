@@ -10,6 +10,9 @@ const reporterPermissions = {
   canFeatureNews: false,
   canTrendNews: false,
   canManageCategories: false,
+  canUploadVideos: false,
+  canEditVideos: false,
+  canDeleteVideos: false,
 };
 
 export async function GET(req) {

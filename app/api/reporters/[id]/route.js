@@ -17,6 +17,9 @@ function cleanReporterUpdate(data) {
       canFeatureNews: Boolean(data.permissions.canFeatureNews),
       canTrendNews: Boolean(data.permissions.canTrendNews),
       canManageCategories: false,
+      canUploadVideos: Boolean(data.permissions.canUploadVideos),
+      canEditVideos: Boolean(data.permissions.canEditVideos),
+      canDeleteVideos: Boolean(data.permissions.canDeleteVideos),
     };
   }
 

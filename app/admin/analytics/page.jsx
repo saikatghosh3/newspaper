@@ -59,14 +59,43 @@ export default function AnalyticsPage() {
         <p className="text-slate-500 text-sm mt-1">Overview of your news portal performance.</p>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
         <StatCard label="Published News" value={data.totalNews} icon="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" color="bg-blue-500" />
+        <StatCard label="Video News" value={data.totalVideos} icon="M8 5v14l11-7z" color="bg-red-500" />
         <StatCard label="Categories" value={data.totalCategories} icon="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" color="bg-green-500" />
         <StatCard label="Reporters" value={data.totalReporters} icon="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" color="bg-orange-500" />
         <StatCard label="Total Views" value={data.totalViews} icon="M15 12a3 3 0 11-6 0 3 3 0 016 0z M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" color="bg-purple-500" />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+        <div className="bg-white rounded-xl shadow-sm p-6">
+          <h2 className="text-lg font-semibold text-slate-800 mb-4">Videos Published (Last 30 Days)</h2>
+          {data.videoBarData && data.videoBarData.length === 0 ? (
+            <p className="text-slate-400 text-sm py-10 text-center">No videos published yet.</p>
+          ) : data.videoBarData ? (
+            <ResponsiveContainer width="100%" height={280}>
+              <BarChart data={data.videoBarData} margin={{ top: 5, right: 5, left: -15, bottom: 5 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
+                <XAxis
+                  dataKey="date"
+                  tick={{ fontSize: 11, fill: '#64748b' }}
+                  tickFormatter={val => {
+                    const d = new Date(val);
+                    return `${d.getMonth() + 1}/${d.getDate()}`;
+                  }}
+                />
+                <YAxis tick={{ fontSize: 11, fill: '#64748b' }} allowDecimals={false} />
+                <Tooltip
+                  contentStyle={{ borderRadius: '8px', border: '1px solid #e2e8f0', fontSize: '13px' }}
+                  labelFormatter={val => new Date(val).toLocaleDateString()}
+                  formatter={(value) => [`${value} videos`, 'Published']}
+                />
+                <Bar dataKey="count" fill="#dc2626" radius={[3, 3, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          ) : null}
+        </div>
+
         <div className="bg-white rounded-xl shadow-sm p-6">
           <h2 className="text-lg font-semibold text-slate-800 mb-4">News by Category</h2>
           {data.pieData.length === 0 ? (

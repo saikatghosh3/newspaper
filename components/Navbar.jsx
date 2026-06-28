@@ -128,6 +128,14 @@ export default function Navbar({ categories = [], activeCategorySlug }) {
           </Link>
 
           <div className="hidden lg:flex items-center gap-1 min-w-0">
+            <Link
+              href="/videos"
+              className={`px-3 py-2 text-sm font-semibold rounded-md transition-colors whitespace-nowrap ${
+                pathname === '/videos' ? 'bg-red-600 text-white hover:bg-red-700' : 'text-slate-700 hover:text-red-600 hover:bg-slate-50'
+              }`}
+            >
+              Videos
+            </Link>
             {visibleCategories.map(category => (
               <Link
                 key={category._id}
@@ -262,7 +270,15 @@ export default function Navbar({ categories = [], activeCategorySlug }) {
                 {category.name}
               </Link>
             ))}
-            <div className="pt-2 mt-2 border-t border-slate-100">
+            <div className="pt-2 mt-2 border-t border-slate-100 space-y-1">
+              <Link
+                href="/videos"
+                className={`block px-4 py-2.5 text-sm font-semibold rounded-lg transition-colors ${
+                  pathname === '/videos' ? 'bg-red-600 text-white' : 'text-slate-700 hover:bg-red-50 hover:text-red-600'
+                }`}
+              >
+                Videos
+              </Link>
               <Link
                 href="/admin/login"
                 className="flex items-center gap-2 px-4 py-2.5 text-sm font-semibold text-red-600 hover:bg-red-50 rounded-lg transition-colors"

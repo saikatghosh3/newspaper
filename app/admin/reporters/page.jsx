@@ -11,6 +11,9 @@ const defaultPermissions = {
   canPublishNews: false,
   canFeatureNews: false,
   canTrendNews: false,
+  canUploadVideos: false,
+  canEditVideos: false,
+  canDeleteVideos: false,
 };
 
 const permissionOptions = [
@@ -20,6 +23,9 @@ const permissionOptions = [
   { key: 'canTrendNews', label: 'Set trending' },
   { key: 'canFeatureNews', label: 'Set featured' },
   { key: 'canDeleteNews', label: 'Delete own news' },
+  { key: 'canUploadVideos', label: 'Upload video news' },
+  { key: 'canEditVideos', label: 'Edit video news' },
+  { key: 'canDeleteVideos', label: 'Delete video news' },
 ];
 
 export default function ReportersPage() {

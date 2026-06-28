@@ -29,10 +29,14 @@ export default function AdminLayout({ children }) {
         const allowed =
           pathname === '/admin/news' ||
           (pathname?.startsWith('/admin/news/create') && permissions.canCreateNews) ||
-          (pathname?.startsWith('/admin/news/edit') && permissions.canEditNews);
+          (pathname?.startsWith('/admin/news/edit') && permissions.canEditNews) ||
+          pathname === '/admin/videos' ||
+          (pathname?.startsWith('/admin/videos/create') && permissions.canUploadVideos) ||
+          (pathname?.startsWith('/admin/videos/edit') && permissions.canEditVideos);
 
         if (!allowed) {
-          router.replace(permissions.canCreateNews ? '/admin/news/create' : '/admin/news');
+          const fallback = permissions.canCreateNews ? '/admin/news/create' : permissions.canUploadVideos ? '/admin/videos/create' : '/admin/news';
+          router.replace(fallback);
           return;
         }
       }

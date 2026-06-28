@@ -7,6 +7,7 @@ import Link from 'next/link';
 import Navbar from '@/components/Navbar';
 import TrendingNews from '@/components/TrendingNews';
 import NewsCard from '@/components/NewsCard';
+import VideoNewsSection from '@/components/VideoNews';
 import AdDisplay from '@/components/AdDisplay';
 import Footer from '@/components/Footer';
 
@@ -198,6 +199,8 @@ export default async function HomePage() {
         )}
 
         <AdDisplay position="inline" className="mb-12 flex justify-center" />
+
+        <VideoNewsSection />
 
         <div className="lg:grid lg:grid-cols-12 lg:gap-8">
           <div className="lg:col-span-9 space-y-12">
