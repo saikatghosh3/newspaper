@@ -54,10 +54,10 @@ export default function Footer() {
 
       {/* Main Footer Content */}
       <div className="max-w-7xl mx-auto px-4 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
           {/* Brand Column */}
-          <div className="lg:col-span-2">
-            <div className="flex items-center gap-3 mb-4">
+          <div className="lg:col-span-2 text-center md:text-left">
+            <div className="flex items-center justify-center md:justify-start gap-3 mb-4">
               {logoUrl ? (
                 <img src={logoUrl} alt={siteName} className="h-10 w-10 rounded-full object-cover shrink-0" />
               ) : (
@@ -65,12 +65,12 @@ export default function Footer() {
               )}
               <span className="text-2xl font-black text-white tracking-tight">{siteName}</span>
             </div>
-            <p className="text-sm leading-relaxed text-slate-400 max-w-md">
+            <p className="text-sm leading-relaxed text-slate-400 max-w-md mx-auto md:mx-0">
               {footerText || 'Your trusted source for the latest news, analysis, and updates. Stay informed with breaking news from around the world.'}
             </p>
             
             {/* Social Links */}
-            <div className="flex flex-wrap gap-3 mt-6">
+            <div className="flex flex-wrap justify-center md:justify-start gap-3 mt-6">
               {social.facebook && (
                 <a href={social.facebook} target="_blank" rel="noopener noreferrer"
                   className="flex items-center gap-2 px-4 py-2.5 bg-slate-800/50 hover:bg-blue-600 rounded-xl text-sm transition-all duration-300 hover:shadow-lg hover:shadow-blue-600/20"
@@ -102,7 +102,7 @@ export default function Footer() {
           </div>
 
           {/* Quick Links */}
-          <div>
+          <div className="text-center md:text-left">
             <h3 className="text-sm font-bold text-white uppercase tracking-wider mb-4">Quick Links</h3>
             <ul className="space-y-3">
               <li>
@@ -139,7 +139,7 @@ export default function Footer() {
           </div>
 
           {/* Legal */}
-          <div>
+          <div className="text-center md:text-left">
             <h3 className="text-sm font-bold text-white uppercase tracking-wider mb-4">Legal</h3>
             <ul className="space-y-3">
               <li>
@@ -167,9 +167,9 @@ export default function Footer() {
 
       {/* Bottom Bar */}
       <div className="border-t border-slate-800/50">
-        <div className="max-w-7xl mx-auto px-4 py-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-sm text-slate-500">
+        <div className="max-w-7xl mx-auto px-4 py-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-sm text-slate-500 text-center">
           <p>&copy; {new Date().getFullYear()} {siteName}. All rights reserved.</p>
-          <div className="flex items-center gap-4">
+          <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-4">
             <span className="flex items-center gap-1.5">
               <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
               Live Updates
