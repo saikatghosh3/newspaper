@@ -10,19 +10,26 @@ import NewsCard from '@/components/NewsCard';
 import VideoNewsSection from '@/components/VideoNews';
 import AdDisplay from '@/components/AdDisplay';
 import Footer from '@/components/Footer';
+import Img from '@/components/Img';
 
 export const revalidate = 60;
 
-function SectionHeader({ category }) {
+const CATEGORY_COLORS = ['#dc2626','#2563eb','#059669','#d97706','#7c3aed','#0891b2','#be185d','#65a30d'];
+
+function SectionHeader({ category, index }) {
+  const color = category.color || CATEGORY_COLORS[index % CATEGORY_COLORS.length];
   return (
-    <div className="flex items-center justify-between border-b border-slate-200 pb-3 mb-5">
-      <div className="flex items-center gap-3">
-        <span className="w-1.5 h-8 rounded-full" style={{ backgroundColor: category.color || '#dc2626' }} />
-        <h2 className="text-2xl font-black text-slate-950">{category.name}</h2>
+    <div className="mb-6">
+      <div className="flex items-center justify-between rounded-xl px-5 py-3" style={{ backgroundColor: color }}>
+        <div className="flex items-center gap-3">
+          <span className="w-1 h-6 rounded-full bg-white/40" />
+          <h2 className="text-lg font-black text-white tracking-wide">{category.name}</h2>
+        </div>
+        <Link href={`/category/${category.slug}`} className="text-xs font-bold text-white/80 hover:text-white flex items-center gap-1 transition-colors">
+          See all
+          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
+        </Link>
       </div>
-      <Link href={`/category/${category.slug}`} className="text-sm font-bold text-red-600 hover:text-red-700">
-        See all
-      </Link>
     </div>
   );
 }
@@ -36,7 +43,7 @@ function CategorySection({ section, sectionIndex, layout }) {
   if (layout === 2) {
     return (
       <section id={`category-${category.slug}`} className="scroll-mt-28">
-        <SectionHeader category={category} />
+        <SectionHeader category={category} index={sectionIndex} />
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {items.slice(0, 7).map(item => (
             <NewsCard key={item._id} news={item} compact />
@@ -49,19 +56,26 @@ function CategorySection({ section, sectionIndex, layout }) {
   if (layout === 3) {
     return (
       <section id={`category-${category.slug}`} className="scroll-mt-28">
-        <SectionHeader category={category} />
+        <SectionHeader category={category} index={sectionIndex} />
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2 space-y-4">
-            {items.slice(0, 7).map(item => (
+          <div className="lg:col-span-2 space-y-5">
+            {items.slice(0, 5).map(item => (
               <NewsCard key={item._id} news={item} horizontal />
             ))}
           </div>
-          <div className="bg-slate-50 border border-slate-200 rounded-md p-4">
-            <h3 className="font-black text-slate-900 mb-4">Latest {category.name}</h3>
-            <div className="space-y-3">
-              {items.slice(0, 7).map(item => (
-                <Link key={item._id} href={`/news/${item.slug}`}>
-                  <p className="text-sm font-bold text-slate-700 hover:text-red-600 line-clamp-2">{item.title}</p>
+          <div className="bg-white border border-slate-200 rounded-xl p-5">
+            <h3 className="font-black text-slate-900 mb-4 pb-3 border-b border-slate-200">Latest {category.name}</h3>
+            <div className="space-y-0">
+              {items.slice(0, 7).map((item, i) => (
+                <Link key={item._id} href={`/news/${item.slug}`} className="group flex items-center gap-3 py-3 border-b border-slate-100 last:border-0 last:pb-0 first:pt-0">
+                  {item.featuredImage ? (
+                    <Img src={item.featuredImage} alt={item.title} loading="lazy" className="shrink-0 w-14 h-14 rounded-lg object-cover group-hover:scale-105 transition-transform duration-300" />
+                  ) : (
+                    <span className="shrink-0 w-14 h-14 rounded-lg bg-slate-100 group-hover:bg-red-100 flex items-center justify-center text-sm font-black text-slate-400 group-hover:text-red-600 transition-colors">
+                      {i + 1}
+                    </span>
+                  )}
+                  <p className="text-sm font-bold text-slate-700 group-hover:text-red-600 line-clamp-2 leading-snug transition-colors">{item.title}</p>
                 </Link>
               ))}
             </div>
@@ -73,20 +87,19 @@ function CategorySection({ section, sectionIndex, layout }) {
 
   return (
     <section id={`category-${category.slug}`} className="scroll-mt-28">
-      <SectionHeader category={category} />
+      <SectionHeader category={category} index={sectionIndex} />
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {lead && (
           <div className="lg:col-span-6">
             <Link href={`/news/${lead.slug}`}>
               <div className="group h-full bg-white border border-slate-200 rounded-md overflow-hidden hover:shadow-xl transition-shadow">
                 <div className="relative h-48 sm:h-72 bg-slate-100 overflow-hidden">
-                  {lead.featuredImage && (
-                    <img
-                      src={lead.featuredImage}
-                      alt={lead.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                    />
-                  )}
+                  <Img
+                    src={lead.featuredImage}
+                    alt={lead.title}
+                    loading="lazy"
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                  />
                   <div className="absolute top-4 left-4 px-3 py-1 bg-red-600 text-white text-xs font-black rounded">
                     {sectionIndex === 0 ? 'Top Story' : category.name}
                   </div>
@@ -122,47 +135,49 @@ function CategorySection({ section, sectionIndex, layout }) {
 export default async function HomePage() {
   await connectDB();
 
-  const [settings, categories, trendingNews, featuredNews] = await Promise.all([
-    Settings.findOne().lean().catch(() => null),
-    Category.find({ isActive: true }).sort({ name: 1 }).lean(),
+  const [settings, categories, trendingNews] = await Promise.all([
+    Settings.findOne().select('selectedLayout').lean().catch(() => null),
+    Category.find({ isActive: true }).select('name slug color').sort({ name: 1 }).lean(),
     News.find({ isTrending: true, status: 'published' })
+      .select('title slug excerpt featuredImage category author publishedAt isTrending')
       .populate('category', 'name slug color')
       .populate('author', 'name')
       .sort({ publishedAt: -1 })
       .limit(20)
-      .lean(),
-    News.find({ status: 'published' })
-      .populate('category', 'name slug color')
-      .populate('author', 'name')
-      .sort({ publishedAt: -1, createdAt: -1 })
-      .limit(1)
       .lean(),
   ]);
 
   const categoryIds = categories.map(c => c._id);
   const allCategoryNews = categoryIds.length > 0
     ? await News.find({ category: { $in: categoryIds }, status: 'published' })
+        .select('title slug excerpt featuredImage category author publishedAt isFeatured')
         .populate('category', 'name slug color')
         .populate('author', 'name')
         .sort({ publishedAt: -1, createdAt: -1 })
         .lean()
     : [];
 
+  const plainSettings = settings ? JSON.parse(JSON.stringify(settings)) : null;
+  const plainCategories = JSON.parse(JSON.stringify(categories));
+  const plainTrending = JSON.parse(JSON.stringify(trendingNews));
+  const plainAllNews = JSON.parse(JSON.stringify(allCategoryNews));
+  const plainFeatured = plainAllNews[0] || null;
+
   const newsByCategory = {};
-  categories.forEach(cat => {
+  plainCategories.forEach(cat => {
     newsByCategory[cat._id] = [];
   });
-  allCategoryNews.forEach(item => {
+  plainAllNews.forEach(item => {
     const catId = String(item.category?._id || item.category);
     if (newsByCategory[catId] && newsByCategory[catId].length < 7) {
       newsByCategory[catId].push(item);
     }
   });
 
-  const featured = featuredNews[0] || allCategoryNews[0] || null;
-  const layout = settings?.selectedLayout || 1;
+  const featured = plainFeatured ? JSON.parse(JSON.stringify(plainFeatured)) : null;
+  const layout = plainSettings?.selectedLayout || 1;
 
-  const categorySections = categories
+  const categorySections = plainCategories
     .map(category => ({
       category,
       items: newsByCategory[category._id] || [],
@@ -171,28 +186,56 @@ export default async function HomePage() {
 
   return (
     <div className="min-h-screen bg-slate-50">
-      <Navbar categories={categories} />
-      <TrendingNews items={trendingNews} />
+      <Navbar categories={plainCategories} />
+      <TrendingNews items={plainTrending} />
 
       <div className="max-w-7xl mx-auto px-4 py-8">
         {featured && (
           <Link href={`/news/${featured.slug}`} className="block mb-10">
-            <div className="grid grid-cols-1 lg:grid-cols-12 bg-white border border-slate-200 rounded-md overflow-hidden hover:shadow-xl transition-shadow group">
-              <div className="lg:col-span-7 relative h-56 sm:h-80 lg:h-[420px] bg-slate-200 overflow-hidden">
-                {featured.featuredImage && (
-                  <img
+            <div className="relative bg-slate-900 rounded-2xl overflow-hidden group">
+              <div className="grid grid-cols-1 lg:grid-cols-12">
+                {/* Image */}
+                <div className="lg:col-span-7 relative h-64 sm:h-80 lg:h-[440px] overflow-hidden">
+                  <Img
                     src={featured.featuredImage}
                     alt={featured.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   />
-                )}
-              </div>
-              <div className="lg:col-span-5 p-6 lg:p-8 flex flex-col justify-center">
-                <span className="text-xs font-black uppercase text-red-600 tracking-wider">{featured.category?.name || 'Featured'}</span>
-                <h1 className="text-3xl lg:text-5xl font-black text-slate-950 leading-tight mt-3 group-hover:text-red-600 transition-colors">
-                  {featured.title}
-                </h1>
-                <p className="text-slate-600 mt-4 line-clamp-3">{featured.excerpt}</p>
+                  <div className="absolute inset-0 bg-gradient-to-r from-slate-900/80 via-slate-900/30 to-transparent lg:bg-gradient-to-r lg:from-transparent lg:via-transparent lg:to-slate-900" />
+                  <div className="absolute top-4 left-4 flex items-center gap-2">
+                    <span className="px-3 py-1 bg-red-600 text-white text-xs font-bold rounded-lg shadow-lg">{featured.category?.name || 'Featured'}</span>
+                    <span className="px-3 py-1 bg-black/50 text-white text-xs font-bold rounded-lg backdrop-blur-sm">Top Story</span>
+                  </div>
+                </div>
+
+                {/* Content */}
+                <div className="lg:col-span-5 p-6 lg:p-10 flex flex-col justify-center relative z-10">
+                  <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black text-white leading-tight group-hover:text-red-400 transition-colors duration-300">
+                    {featured.title}
+                  </h1>
+                  {featured.excerpt && (
+                    <p className="text-slate-400 mt-4 line-clamp-3 leading-relaxed text-sm lg:text-base">{featured.excerpt}</p>
+                  )}
+                  <div className="flex items-center gap-3 mt-6 pt-5 border-t border-slate-700/50">
+                    {featured.author?.name && (
+                      <div className="flex items-center gap-2">
+                        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-red-500 to-red-700 flex items-center justify-center text-white text-xs font-bold">
+                          {featured.author.name.charAt(0)}
+                        </div>
+                        <span className="text-sm font-semibold text-slate-300">{featured.author.name}</span>
+                      </div>
+                    )}
+                    {featured.publishedAt && (
+                      <span className="text-xs text-slate-500">
+                        {new Date(featured.publishedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                      </span>
+                    )}
+                    <span className="ml-auto text-xs font-bold text-red-400 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                      Read More
+                      <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
+                    </span>
+                  </div>
+                </div>
               </div>
             </div>
           </Link>

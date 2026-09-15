@@ -158,7 +158,7 @@ export default function AdvertisementsPage() {
 
       {total === 0 ? (
         <div className="text-center py-12 text-slate-400 bg-white rounded-lg shadow-sm border border-slate-200">
-          No advertisements yet. Click "New Ad" to add one.
+          No advertisements yet. Click &quot;New Ad&quot; to add one.
         </div>
       ) : (
         <>

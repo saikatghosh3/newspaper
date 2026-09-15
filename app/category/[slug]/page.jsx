@@ -22,7 +22,7 @@ export default async function CategoryPage({ params }) {
   await connectDB();
 
   const [allCategories, trendingNews] = await Promise.all([
-    Category.find({ isActive: true }).sort({ name: 1 }).lean(),
+    Category.find({ isActive: true }).select('name slug color description').sort({ name: 1 }).lean(),
     News.find({ isTrending: true, status: 'published' })
       .select('title slug')
       .sort({ publishedAt: -1 })
@@ -30,13 +30,17 @@ export default async function CategoryPage({ params }) {
       .lean(),
   ]);
 
-  const currentCategory = allCategories.find(c => c.slug === params.slug) || null;
+  const plainCategories = JSON.parse(JSON.stringify(allCategories));
+  const plainTrending = JSON.parse(JSON.stringify(trendingNews));
+
+  const currentCategory = plainCategories.find(c => c.slug === params.slug) || null;
 
   if (!currentCategory) notFound();
 
   const [total, newsItems] = await Promise.all([
     News.countDocuments({ category: currentCategory._id, status: 'published' }),
     News.find({ category: currentCategory._id, status: 'published' })
+      .select('title slug excerpt featuredImage category author publishedAt')
       .populate('category', 'name slug color')
       .populate('author', 'name')
       .sort({ publishedAt: -1, createdAt: -1 })
@@ -44,29 +48,38 @@ export default async function CategoryPage({ params }) {
       .lean(),
   ]);
 
+  const plainNews = JSON.parse(JSON.stringify(newsItems));
+
   const pages = Math.ceil(total / 9);
 
   return (
     <div className="min-h-screen bg-slate-50">
-      <Navbar categories={allCategories} activeCategorySlug={params.slug} />
-      <TrendingNews items={trendingNews} />
+      <Navbar categories={plainCategories} activeCategorySlug={params.slug} />
+      <TrendingNews items={plainTrending} />
+
+      {/* Category Banner */}
+      <div className="relative overflow-hidden" style={{ backgroundColor: currentCategory.color || '#dc2626' }}>
+        <div className="absolute inset-0 bg-black/10" />
+        <div className="absolute -right-10 -top-10 w-40 h-40 bg-white/10 rounded-full" />
+        <div className="absolute -left-5 -bottom-5 w-24 h-24 bg-white/5 rounded-full" />
+        <div className="max-w-7xl mx-auto px-4 py-5 md:py-7 relative z-10">
+          <Link href="/" className="inline-flex items-center gap-1 text-sm font-semibold text-white/70 hover:text-white mb-4 transition-colors">
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
+            Home
+          </Link>
+          <h1 className="text-3xl md:text-4xl font-black text-white leading-tight">{currentCategory.name}</h1>
+          {currentCategory.description && (
+            <p className="text-white/80 mt-2 max-w-2xl text-sm md:text-base">{currentCategory.description}</p>
+          )}
+          <div className="flex items-center gap-2 mt-4">
+            <span className="px-3 py-1 bg-white/20 text-white text-xs font-bold rounded-full backdrop-blur-sm">{total} articles</span>
+          </div>
+        </div>
+      </div>
 
       <main className="max-w-7xl mx-auto px-4 py-8">
-        <Link href="/" className="inline-flex text-sm font-bold text-red-600 hover:text-red-700 mb-6">
-          Back to Home
-        </Link>
-
         <div className="lg:grid lg:grid-cols-12 lg:gap-8">
           <div className="lg:col-span-9">
-            <div className="bg-white border border-slate-200 rounded-md p-6 lg:p-8 mb-8">
-              <div className="flex items-center gap-3 mb-3">
-                <span className="w-1.5 h-9 rounded-full" style={{ backgroundColor: currentCategory.color || '#dc2626' }} />
-              </div>
-              <h1 className="text-4xl lg:text-5xl font-black text-slate-950">{currentCategory.name}</h1>
-              {currentCategory.description && (
-                <p className="text-slate-600 mt-3 max-w-2xl">{currentCategory.description}</p>
-              )}
-            </div>
 
             {total === 0 ? (
               <div className="bg-white border border-slate-200 rounded-md p-10 text-center">
@@ -75,7 +88,7 @@ export default async function CategoryPage({ params }) {
             ) : (
               <NewsListClient
                 categoryId={String(currentCategory._id)}
-                initialNews={JSON.parse(JSON.stringify(newsItems))}
+                initialNews={plainNews}
                 currentPage={1}
                 totalPages={pages}
               />
