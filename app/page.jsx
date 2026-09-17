@@ -139,21 +139,20 @@ export default async function HomePage() {
     Settings.findOne().select('selectedLayout').lean().catch(() => null),
     Category.find({ isActive: true }).select('name slug color').sort({ name: 1 }).lean(),
     News.find({ isTrending: true, status: 'published' })
-      .select('title slug excerpt featuredImage category author publishedAt isTrending')
+      .select('title slug featuredImage category publishedAt')
       .populate('category', 'name slug color')
-      .populate('author', 'name')
       .sort({ publishedAt: -1 })
-      .limit(20)
+      .limit(10)
       .lean(),
   ]);
 
   const categoryIds = categories.map(c => c._id);
   const allCategoryNews = categoryIds.length > 0
     ? await News.find({ category: { $in: categoryIds }, status: 'published' })
-        .select('title slug excerpt featuredImage category author publishedAt isFeatured')
+        .select('title slug excerpt featuredImage category publishedAt')
         .populate('category', 'name slug color')
-        .populate('author', 'name')
         .sort({ publishedAt: -1, createdAt: -1 })
+        .limit(50)
         .lean()
     : [];
 
