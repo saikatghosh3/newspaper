@@ -12,7 +12,7 @@ import AdDisplay from '@/components/AdDisplay';
 import Footer from '@/components/Footer';
 import Img from '@/components/Img';
 
-export const revalidate = 60;
+export const dynamic = 'force-dynamic';
 
 const CATEGORY_COLORS = ['#dc2626','#2563eb','#059669','#d97706','#7c3aed','#0891b2','#be185d','#65a30d'];
 
